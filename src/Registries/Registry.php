@@ -1,6 +1,6 @@
 <?php
 
-namespace Lxj\Laravel\Tars\Registries;
+namespace Lxj\Yii2\Tars\Registries;
 
 class Registry
 {
