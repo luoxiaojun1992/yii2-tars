@@ -14,14 +14,11 @@ class TarsController extends Controller
         \Tars\deploy\Deploy::run();
     }
 
-    public function actionEntry()
+    public function actionEntry($cmd, $cfg)
     {
-        $cmd = $this->option('cmd');
-        $cfg = $this->option('config_path');
-
         list($hostname, $port, $appName, $serverName) = Util::parseTarsConfig($cfg);
 
-        config(['tars.deploy_cfg' => $cfg]);
+        \Yii::$app->params['tars']['deploy_cfg'] = $cfg;
 
         Registry::register($hostname, $port);
 

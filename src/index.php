@@ -17,9 +17,10 @@ if ($cmd === 'stop') {
     $class = new \Tars\cmd\Command($cmd, $config_path);
     $class->run();
 } else {
-    $_SERVER['argv'][0] = $argv[0] = 'tars/entry';
-    $_SERVER['argv'][1] = $argv[1] = '--cmd=' . $cmd;
-    $_SERVER['argv'][2] = $argv[2] = '--config_path=' . $config_path;
+    $_SERVER['argv'][0] = $argv[0] = 'yii';
+    $_SERVER['argv'][1] = $argv[1] = 'tars/entry';
+    $_SERVER['argv'][2] = $argv[2] = $cmd;
+    $_SERVER['argv'][3] = $argv[3] = $config_path;
     $_SERVER['argc'] = $argc = count($_SERVER['argv']);
 
     include_once __DIR__ . '/yii';
