@@ -23,14 +23,14 @@ class Yii2Controller extends Controller
         try {
             clearstatcache();
 
-            list($illuminateRequest, $illuminateResponse) = $this->handle();
+            list($yii2Request, $yii2Response) = $this->handle();
 
-            $this->terminate($illuminateRequest, $illuminateResponse);
+            $this->terminate($yii2Request, $yii2Response);
 
-            $this->clean($illuminateRequest);
+            $this->clean($yii2Request);
 
             //send response event
-            $this->response($illuminateResponse);
+            $this->response($yii2Response);
         } catch (\Exception $e) {
             $this->status(500);
             $this->sendRaw($e->getMessage() . '|' . $e->getTraceAsString());
@@ -60,14 +60,6 @@ class Yii2Controller extends Controller
         $application->trigger(Yii2App::EVENT_AFTER_REQUEST);
 
         $application->state = Yii2App::STATE_SENDING_RESPONSE;
-
-        if (Util::isLumen()) {
-            $illuminateResponse = $application->dispatch($illuminateRequest);
-        } else {
-            /** @var Kernel $kernel */
-            $kernel = $application->make(Kernel::class);
-            $illuminateResponse = $kernel->handle($illuminateRequest);
-        }
 
         if (!($illuminateResponse instanceof BinaryFileResponse)) {
             $content = $illuminateResponse->getContent();
@@ -160,6 +152,10 @@ class Yii2Controller extends Controller
 
     private function response($illuminateResponse)
     {
+        $application = Util::app();
+
+        $application->state = Yii2App::STATE_SENDING_RESPONSE;
+
         Response::make($illuminateResponse, $this->getResponse())->send();
     }
 }

@@ -1,0 +1,34 @@
+{
+  "name": "luoxiaojun1992/yii2-tars",
+  "description": "Yii2 Tars",
+  "minimum-stability": "stable",
+  "license": "proprietary",
+  "authors": [
+    {
+      "name": "author's name",
+      "email": "email@example.com"
+    }
+  ],
+  "require": {
+    "phptars/tars-server": "0.2.4",
+    "phptars/tars-deploy": "0.1.1",
+    "phptars/tars2php": "0.1.3",
+    "phptars/tars-log": "0.1.5",
+    "laravelista/lumen-vendor-publish": "2.1.0",
+    "guzzlehttp/guzzle": "6.3.3"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "*",
+    "mockery/mockery": "*"
+  },
+  "autoload": {
+    "psr-4": {"Lxj\\Laravel\\Tars\\": "src/"}
+  },
+  "extra": {
+    "laravel": {
+      "providers": [
+        "Lxj\\Laravel\\Tars\\ServiceProvider"
+      ]
+    }
+  }
+}

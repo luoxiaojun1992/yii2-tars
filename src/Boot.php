@@ -1,6 +1,6 @@
 <?php
 
-namespace Lxj\Laravel\Tars;
+namespace Lxj\Yii2\Tars;
 
 use Illuminate\Support\Facades\Log;
 use Monolog\Logger;

@@ -1,6 +1,6 @@
 <?php
 
-namespace Lxj\Laravel\Tars;
+namespace Lxj\Yii2\Tars;
 
 use Tars\Utils;
 
