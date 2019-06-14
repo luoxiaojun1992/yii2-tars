@@ -3,9 +3,12 @@
 namespace Lxj\Yii2\Tars;
 
 use Tars\Utils;
+use yii\web\Application;
 
 class Util
 {
+    protected static $app;
+
     public static function parseTarsConfig($cfg)
     {
         $hostname = gethostname();
@@ -17,8 +20,16 @@ class Util
         return [$hostname, $port, $appName, $serverName];
     }
 
+    /**
+     * @return Application
+     * @throws \yii\base\InvalidConfigException
+     */
     public static function app()
     {
-        return \Yii::$app;
+        if (!is_null(self::$app)) {
+            return self::$app;
+        }
+
+        return self::$app = new Application(include \Yii::$app->getBasePath() . '/config/web.php');
     }
 }

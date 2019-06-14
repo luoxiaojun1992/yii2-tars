@@ -1,21 +1,8 @@
 <?php
 
-/*
- * This file is part of the huang-yi/laravel-swoole-http package.
- *
- * (c) Huang Yi <coodeer@163.com>
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
-
 namespace Lxj\Yii2\Tars;
 
-use Illuminate\Http\Response as IlluminateResponse;
 use Tars\core\Response as TarsResponse;
-use Symfony\Component\HttpFoundation\BinaryFileResponse;
-use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
-use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class Response
 {
@@ -25,31 +12,30 @@ class Response
     protected $tarsResponse;
 
     /**
-     * @var \Illuminate\Http\Response
+     * @var \yii\web\Response
      */
-    protected $illuminateResponse;
+    protected $yii2Response;
 
     /**
      * Make a response.
      *
-     * @param $illuminateResponse
+     * @param \yii\web\Response $yii2Response
      * @param TarsResponse $tarsResponse
-     * @return \HuangYi\Http\Server\Response
+     * @return Response
      */
-    public static function make($illuminateResponse, TarsResponse $tarsResponse)
+    public static function make(\yii\web\Response $yii2Response, TarsResponse $tarsResponse)
     {
-        return new static($illuminateResponse, $tarsResponse);
+        return new static($yii2Response, $tarsResponse);
     }
 
     /**
      * Response constructor.
-     *
-     * @param mixed $illuminateResponse
-     * @param TarsResponse
+     * @param \yii\web\Response $yii2Response
+     * @param TarsResponse $tarsResponse
      */
-    public function __construct($illuminateResponse, TarsResponse $tarsResponse)
+    public function __construct(\yii\web\Response $yii2Response, TarsResponse $tarsResponse)
     {
-        $this->setIlluminateResponse($illuminateResponse);
+        $this->setYii2Response($yii2Response);
         $this->setTarsResponse($tarsResponse);
     }
 
@@ -71,34 +57,22 @@ class Response
      */
     protected function sendHeaders()
     {
-        $illuminateResponse = $this->getIlluminateResponse();
+        $yii2Response = $this->getYii2Response();
 
         /* RFC2616 - 14.18 says all Responses need to have a Date */
-        if (! $illuminateResponse->headers->has('Date')) {
-            $illuminateResponse->setDate(\DateTime::createFromFormat('U', time()));
+        if (! $yii2Response->headers->has('Date')) {
+            $yii2Response->headers->set('Date', \DateTime::createFromFormat('U', time()));
         }
 
         // headers
-        foreach ($illuminateResponse->headers->allPreserveCaseWithoutCookies() as $name => $values) {
+        foreach ($yii2Response->headers->getIterator() as $name => $values) {
             foreach ($values as $value) {
                 $this->tarsResponse->header($name, $value);
             }
         }
 
         // status
-        $this->tarsResponse->status($illuminateResponse->getStatusCode());
-
-        // cookies
-        foreach ($illuminateResponse->headers->getCookies() as $cookie) {
-            $method = $cookie->isRaw() ? 'rawcookie' : 'cookie';
-
-            $this->tarsResponse->resource->$method(
-                $cookie->getName(), $cookie->getValue(),
-                $cookie->getExpiresTime(), $cookie->getPath(),
-                $cookie->getDomain(), $cookie->isSecure(),
-                $cookie->isHttpOnly()
-            );
-        }
+        $this->tarsResponse->status($yii2Response->getStatusCode());
     }
 
     /**
@@ -106,20 +80,14 @@ class Response
      */
     protected function sendContent()
     {
-        $illuminateResponse = $this->getIlluminateResponse();
+        $yii2Response = $this->getYii2Response();
 
-        if ($illuminateResponse instanceof StreamedResponse) {
-            $illuminateResponse->sendContent();
-        } elseif ($illuminateResponse instanceof BinaryFileResponse) {
-            $this->tarsResponse->resource->sendfile($illuminateResponse->getFile()->getPathname());
-        } else {
-            $this->tarsResponse->resource->end($illuminateResponse->getContent());
-        }
+        $this->tarsResponse->resource->end($yii2Response->content);
     }
 
     /**
      * @param TarsResponse $tarsResponse
-     * @return \HuangYi\Http\Server\Response
+     * @return $this
      */
     protected function setTarsResponse(TarsResponse $tarsResponse)
     {
@@ -137,26 +105,21 @@ class Response
     }
 
     /**
-     * @param mixed illuminateResponse
-     * @return \HuangYi\Http\Server\Response
+     * @param $yii2Response
+     * @return $this
      */
-    protected function setIlluminateResponse($illuminateResponse)
+    protected function setYii2Response($yii2Response)
     {
-        if (! $illuminateResponse instanceof SymfonyResponse) {
-            $content = (string) $illuminateResponse;
-            $illuminateResponse = new IlluminateResponse($content);
-        }
-
-        $this->illuminateResponse = $illuminateResponse;
+        $this->yii2Response = $yii2Response;
 
         return $this;
     }
 
     /**
-     * @return \Illuminate\Http\Response
+     * @return \yii\web\Response
      */
-    public function getIlluminateResponse()
+    public function getYii2Response()
     {
-        return $this->illuminateResponse;
+        return $this->yii2Response;
     }
 }
