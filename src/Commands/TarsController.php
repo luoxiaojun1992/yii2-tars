@@ -25,4 +25,9 @@ class TarsController extends Controller
         $class = new TarsCommand($cmd, $cfg);
         $class->run();
     }
+
+    public function actionPublish()
+    {
+        //todo
+    }
 }

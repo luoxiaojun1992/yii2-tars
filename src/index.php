@@ -10,7 +10,7 @@ if ($cmd === 'stop') {
 
     list($hostname, $port, $appName, $serverName) = \Lxj\Yii2\Tars\Util::parseTarsConfig($config_path);
 
-    $localConfig = include_once __DIR__ . '/config/tars.php';
+    $localConfig = (include_once __DIR__ . '/config/params.php')['tars'];
 
     \Lxj\Yii2\Tars\Registries\Registry::down($hostname, $port, $localConfig);
 

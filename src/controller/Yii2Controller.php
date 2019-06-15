@@ -7,8 +7,12 @@ use Lxj\Yii2\Tars\Controller;
 use Lxj\Yii2\Tars\Request;
 use Lxj\Yii2\Tars\Response;
 use Lxj\Yii2\Tars\Util;
+use Yii;
 use yii\base\Application as Yii2App;
 use yii\base\Event;
+use yii\base\InvalidArgumentException;
+use yii\base\InvalidConfigException;
+use yii\web\ResponseFormatterInterface;
 
 class Yii2Controller extends Controller
 {
@@ -63,7 +67,12 @@ class Yii2Controller extends Controller
         $application->state = Yii2App::STATE_SENDING_RESPONSE;
 
         ob_start();
-        $yii2Response->send();
+        $yii2Response->trigger(\yii\web\Response::EVENT_BEFORE_SEND);
+        $this->prepareResponse($yii2Response);
+        $yii2Response->trigger(\yii\web\Response::EVENT_AFTER_PREPARE);
+        $this->getResponseContent($yii2Response);
+        $yii2Response->trigger(\yii\web\Response::EVENT_AFTER_SEND);
+        $yii2Response->isSent = true;
         $responseContent = ob_get_contents();
         ob_end_clean();
 
@@ -78,6 +87,78 @@ class Yii2Controller extends Controller
         }
 
         return [$yii2Request, $yii2Response];
+    }
+
+    private function prepareResponse(\yii\web\Response $response)
+    {
+        if ($response->statusCode === 204) {
+            $response->content = '';
+            $response->stream = null;
+            return;
+        }
+
+        if ($response->stream !== null) {
+            return;
+        }
+
+        if (isset($response->formatters[$response->format])) {
+            $formatter = $response->formatters[$response->format];
+            if (!is_object($formatter)) {
+                $response->formatters[$response->format] = $formatter = Yii::createObject($formatter);
+            }
+            if ($formatter instanceof ResponseFormatterInterface) {
+                $formatter->format($response);
+            } else {
+                throw new InvalidConfigException("The '{$response->format}' response formatter is invalid. It must implement the ResponseFormatterInterface.");
+            }
+        } elseif ($response->format === \yii\web\Response::FORMAT_RAW) {
+            if ($response->data !== null) {
+                $response->content = $response->data;
+            }
+        } else {
+            throw new InvalidConfigException("Unsupported response format: {$response->format}");
+        }
+
+        if (is_array($response->content)) {
+            throw new InvalidArgumentException('Response content must not be an array.');
+        } elseif (is_object($response->content)) {
+            if (method_exists($response->content, '__toString')) {
+                $response->content = $response->content->__toString();
+            } else {
+                throw new InvalidArgumentException('Response content must be a string or an object implementing __toString().');
+            }
+        }
+    }
+
+    private function getResponseContent(\yii\web\Response $response)
+    {
+        if ($response->stream === null) {
+            echo $response->content;
+
+            return;
+        }
+
+        set_time_limit(0); // Reset time limit for big files
+        $chunkSize = 8 * 1024 * 1024; // 8MB per chunk
+
+        if (is_array($response->stream)) {
+            list($handle, $begin, $end) = $response->stream;
+            fseek($handle, $begin);
+            while (!feof($handle) && ($pos = ftell($handle)) <= $end) {
+                if ($pos + $chunkSize > $end) {
+                    $chunkSize = $end - $pos + 1;
+                }
+                echo fread($handle, $chunkSize);
+                flush(); // Free up memory. Otherwise large files will trigger PHP's memory limit.
+            }
+            fclose($handle);
+        } else {
+            while (!feof($response->stream)) {
+                echo fread($response->stream, $chunkSize);
+                flush();
+            }
+            fclose($response->stream);
+        }
     }
 
     private function terminate($yii2Request, $yii2Response)

@@ -32,11 +32,13 @@ class Yii2Request extends \yii\web\Request
 
     /**
      * @param \Tars\core\Request $request
+     * @return $this
      */
     public function setTarsRequest(\Tars\core\Request $request)
     {
         $this->tarsRequest = $request;
         $this->clear();
+        return $this;
     }
 
     /**
