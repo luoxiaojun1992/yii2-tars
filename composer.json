@@ -1,5 +1,6 @@
 {
   "name": "luoxiaojun1992/yii2-tars",
+  "type": "yii2-extension",
   "description": "Yii2 Tars",
   "minimum-stability": "stable",
   "license": "proprietary",
@@ -22,5 +23,8 @@
   },
   "autoload": {
     "psr-4": {"Lxj\\Yii2\\Tars\\": "src/"}
+  },
+  "extra": {
+    "bootstrap": "\\Lxj\\Yii2\\Tars\\Yii2Bootstrap"
   }
 }

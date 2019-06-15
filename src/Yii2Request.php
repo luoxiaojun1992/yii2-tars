@@ -236,7 +236,8 @@ class Yii2Request extends \yii\web\Request
         } else {
             throw new InvalidConfigException('Unable to determine the request URI.');
         }
-        return $requestUri;
+
+        return substr($requestUri, 11);
     }
 
     /**
