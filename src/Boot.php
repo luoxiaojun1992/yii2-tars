@@ -12,7 +12,7 @@ class Boot
     public static function handle()
     {
         if (!self::$booted) {
-            $localConfig = \Yii::$app->params['tars'];
+            $localConfig = Util::app()->params['tars'];
 
             list($hostname, $port, $appName, $serverName) = Util::parseTarsConfig($localConfig['deploy_cfg']);
 
@@ -35,8 +35,9 @@ class Boot
         if ($configtext) {
             $remoteConfig = json_decode($configtext, true);
             foreach ($remoteConfig as $configName => $configValue) {
-                //todo
-                app('config')->set($configName, array_merge(config($configName) ?: [], $configValue));
+                $app = Util::app();
+                $localConfig = isset($app->params[$configName]) ? $app->params[$configName] : [];
+                $app->params[$configName] = array_merge($localConfig, $configValue);
             }
         }
     }
@@ -45,7 +46,9 @@ class Boot
     {
         $config = Config::communicatorConfig($tarsregistry, $appName, $serverName, $communicatorConfigLogLevel);
 
-        //todo
-        Log::driver()->pushHandler(new \Tars\log\handler\TarsHandler($config, 'tars.tarslog.LogObj', $level));
+        Util::app()->getLog()->getLogger()->dispatcher->targets['tars'] = \Yii::createObject([
+            'class' => LogTarget::class,
+            'logConf' => $config
+        ]);
     }
 }

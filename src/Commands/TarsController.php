@@ -18,7 +18,7 @@ class TarsController extends Controller
     {
         list($hostname, $port, $appName, $serverName) = Util::parseTarsConfig($cfg);
 
-        \Yii::$app->params['tars']['deploy_cfg'] = $cfg;
+        Util::app()->params['tars']['deploy_cfg'] = $cfg;
 
         Registry::register($hostname, $port);
 

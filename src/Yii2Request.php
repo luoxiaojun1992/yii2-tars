@@ -52,7 +52,7 @@ class Yii2Request extends \yii\web\Request
      */
     public function resolve()
     {
-        $result = Yii::$app->getUrlManager()->parseRequest($this);
+        $result = Util::app()->getUrlManager()->parseRequest($this);
         if ($result !== false) {
             list ($route, $params) = $result;
             if ($this->getQueryParams() === null) {
@@ -194,7 +194,7 @@ class Yii2Request extends \yii\web\Request
                 if (!is_string($value)) {
                     continue;
                 }
-                $data = Yii::$app->getSecurity()->validateData($value, $this->cookieValidationKey);
+                $data = Util::app()->getSecurity()->validateData($value, $this->cookieValidationKey);
                 if ($data === false) {
                     continue;
                 }

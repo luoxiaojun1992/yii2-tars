@@ -2,11 +2,13 @@
 
 namespace Lxj\Yii2\Tars\Registries;
 
+use Lxj\Yii2\Tars\Util;
+
 class Registry
 {
     public static function register($hostname, $port)
     {
-        $tarsDriverConfig = \Yii::$app->params['tars'];
+        $tarsDriverConfig = Util::app()->params['tars'];
 
         foreach ($tarsDriverConfig['registries'] as $registry) {
             if ($registry['type'] === 'kong') {
