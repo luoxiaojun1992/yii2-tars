@@ -69,6 +69,8 @@ class TarsController extends Controller
         ];
 
         $this->publishConfig($config[$tag]);
+
+        $this->stdout('Published.' . PHP_EOL);
     }
 
     private function publishResource($resources)
