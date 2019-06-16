@@ -21,5 +21,7 @@ class Yii2Bootstrap implements BootstrapInterface
         if ($app instanceof \yii\console\Application) {
             $app->controllerMap['tars'] = TarsController::class;
         }
+
+        \Yii::setAlias('@app/tars', $app->getBasePath() . '/tars');
     }
 }
