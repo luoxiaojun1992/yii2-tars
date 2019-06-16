@@ -85,7 +85,7 @@ class TarsController extends Controller
             $destConfig = include $dest;
             $srcConfig = include $src;
             $destConfig['tars'] = array_merge($srcConfig, isset($destConfig['tars']) ? $destConfig['tars'] : []);
-            file_put_contents($dest, '<?php' . PHP_EOL . 'return ' . var_export($destConfig, true) . ';');
+            file_put_contents($dest, '<?php' . PHP_EOL . 'return ' . var_export($destConfig, true) . ';' . PHP_EOL);
         }
     }
 
