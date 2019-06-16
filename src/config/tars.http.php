@@ -4,18 +4,18 @@ return [
     'registries' => [
 //        [
 //            'type' => 'kong',
-//            'url' => env('KONG_UPSTREAM', ''),
+//            'url' => '',
 //        ]
     ],
 
-//    'tarsregistry' => env('TARS_REGISTRY', ''),
+//    'tarsregistry' => '',
 
 //    'log_level' => \Monolog\Logger::INFO,
 
 //    'communicator_config_log_level' => 'INFO',
 
     'services' => [
-        'namespaceName' => 'Lxj\Laravel\Tars\\',
+        'namespaceName' => 'Lxj\Yii2\Tars\\',
         'monitorStoreConf' => [
             //'className' => Tars\monitor\cache\RedisStoreCache::class,
             //'config' => [
@@ -32,7 +32,7 @@ return [
 
     'proto' => [
         'appName' => 'PHPTest', //根据实际情况替换
-        'serverName' => 'PHPHTTPServer', //根据实际情况替换
+        'serverName' => 'Yii2Tars', //根据实际情况替换
         'objName' => 'obj', //根据实际情况替换
     ],
 ];

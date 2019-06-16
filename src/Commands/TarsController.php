@@ -34,8 +34,8 @@ class TarsController extends Controller
 
         $basePath = Util::app()->getBasePath();
         $tarsServantDir = $basePath . '/tars/servant';
-        $tarsServantImplDir = $basePath . 'tars/impl';
-        $tarsCservantDir = $basePath . 'tars/cservant';
+        $tarsServantImplDir = $basePath . '/tars/impl';
+        $tarsCservantDir = $basePath . '/tars/cservant';
 
         $this->ensureDirExisted($tarsServantDir);
         $this->ensureDirExisted($tarsServantImplDir);
