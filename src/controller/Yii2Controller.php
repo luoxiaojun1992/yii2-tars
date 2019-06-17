@@ -163,7 +163,9 @@ class Yii2Controller extends Controller
 
     private function terminate($yii2Request, $yii2Response)
     {
-        //
+        $tarsRequestedEvent = new Event();
+        $tarsRequestedEvent->data = [$yii2Request, $yii2Response];
+        Util::app()->trigger('tarsRequested', $tarsRequestedEvent);
     }
 
     private function clean($yii2Request)
