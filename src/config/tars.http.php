@@ -9,6 +9,7 @@ return [
     ],
 
 //    'log_level' => ['info'],
+//    'log_interval' => 1000,
 
     'services' => [
         'namespaceName' => 'Lxj\Yii2\Tars\\',

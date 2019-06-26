@@ -2,6 +2,7 @@
 
 return [
 //    'log_level' => ['info'],
+//    'log_interval' => 1000,
 
     'services' => [
         'home-api' => '\app\tars\servant\PHPTest\Yii2Tars\obj\TestTafServiceServant', //根据实际情况替换，遵循PSR-4即可，与tars.proto.php配置一致

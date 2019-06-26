@@ -77,6 +77,12 @@ Yii2集成微服务治理框架Tars
    ```php
    'log_level' => ['info']
    ```
+   
+   如果需要指定TarsLog的记录频率，修改配置文件src/config/params.php文件tars字段
+      
+   ```php
+   'log_interval' => 1000
+   ```
 
 6. 如果使用http协议，按框架原生方式编写代码，路由没有特殊要求
 

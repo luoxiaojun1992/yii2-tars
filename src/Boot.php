@@ -16,6 +16,7 @@ class Boot
             $localConfig = Util::app()->params['tars'];
 
             $logLevel = isset($localConfig['log_level']) ? $localConfig['log_level'] : ['info'];
+            $logInterval = isset($localConfig['log_interval']) ? $localConfig['log_interval'] : 1000;
 
             $deployConfig = App::getTarsConfig();
             $tarsServerConf = $deployConfig['tars']['application']['server'];
@@ -24,7 +25,7 @@ class Boot
 
             self::fetchConfig($localConfig['deploy_cfg'], $appName, $serverName);
 
-            self::setTarsLog($localConfig['deploy_cfg'], $logLevel);
+            self::setTarsLog($localConfig['deploy_cfg'], $logLevel, $logInterval);
 
             self::$booted = true;
         }
@@ -43,7 +44,7 @@ class Boot
         }
     }
 
-    private static function setTarsLog($deployConfigPath, $level = ['info'])
+    private static function setTarsLog($deployConfigPath, $level = ['info'], $logInterval = 1000)
     {
         $config = Config::communicatorConfig($deployConfigPath);
 
@@ -51,6 +52,7 @@ class Boot
             'class' => LogTarget::class,
             'logConf' => $config,
             'levels' => $level,
+            'exportInterval' => $logInterval,
         ]);
     }
 }
