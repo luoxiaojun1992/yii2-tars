@@ -8,11 +8,7 @@ return [
 //        ]
     ],
 
-//    'tarsregistry' => '',
-
-//    'log_level' => \Monolog\Logger::INFO,
-
-//    'communicator_config_log_level' => 'INFO',
+//    'log_level' => ['info'],
 
     'services' => [
         'namespaceName' => 'Lxj\Yii2\Tars\\',

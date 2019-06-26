@@ -15,6 +15,8 @@ class Boot
         if (!self::$booted) {
             $localConfig = Util::app()->params['tars'];
 
+            $logLevel = isset($localConfig['log_level']) ? $localConfig['log_level'] : ['info'];
+
             $deployConfig = App::getTarsConfig();
             $tarsServerConf = $deployConfig['tars']['application']['server'];
             $appName = $tarsServerConf['app'];
@@ -22,7 +24,7 @@ class Boot
 
             self::fetchConfig($localConfig['deploy_cfg'], $appName, $serverName);
 
-            self::setTarsLog($localConfig['deploy_cfg']);
+            self::setTarsLog($localConfig['deploy_cfg'], $logLevel);
 
             self::$booted = true;
         }
@@ -41,13 +43,14 @@ class Boot
         }
     }
 
-    private static function setTarsLog($deployConfigPath)
+    private static function setTarsLog($deployConfigPath, $level = ['info'])
     {
         $config = Config::communicatorConfig($deployConfigPath);
 
         Util::app()->getLog()->getLogger()->dispatcher->targets['tars'] = \Yii::createObject([
             'class' => LogTarget::class,
-            'logConf' => $config
+            'logConf' => $config,
+            'levels' => $level,
         ]);
     }
 }

@@ -1,11 +1,7 @@
 <?php
 
 return [
-//    'tarsregistry' => '',
-
-//    'log_level' => \Monolog\Logger::INFO,
-
-//    'communicator_config_log_level' => 'INFO',
+//    'log_level' => ['info'],
 
     'services' => [
         'home-api' => '\app\tars\servant\PHPTest\Yii2Tars\obj\TestTafServiceServant', //根据实际情况替换，遵循PSR-4即可，与tars.proto.php配置一致
