@@ -100,8 +100,8 @@ class Yii2Request extends \yii\web\Request
         }
 
         $server = isset($tarsRequest->data['server']) ? $tarsRequest->data['server'] : [];
-        if (isset($server['REQUEST_METHOD'])) {
-            return strtoupper($server['REQUEST_METHOD']);
+        if (isset($server['request_method'])) {
+            return strtoupper($server['request_method']);
         }
         return 'GET';
     }
@@ -230,8 +230,8 @@ class Yii2Request extends \yii\web\Request
         $server = isset($tarsRequest->data['server']) ? $tarsRequest->data['server'] : [];
         if ($this->headers->has('X-Rewrite-Url')) { // IIS
             $requestUri = $this->headers->get('X-Rewrite-Url');
-        } elseif (isset($server['REQUEST_URI'])) {
-            $requestUri = $server['REQUEST_URI'];
+        } elseif (isset($server['request_uri'])) {
+            $requestUri = $server['request_uri'];
             if ($requestUri !== '' && $requestUri[0] !== '/') {
                 $requestUri = preg_replace('/^(http|https):\/\/[^\/]+/i', '', $requestUri);
             }
@@ -249,7 +249,8 @@ class Yii2Request extends \yii\web\Request
     {
         $tarsRequest = $this->getTarsRequest();
         $server = isset($tarsRequest->data['server']) ? $tarsRequest->data['server'] : [];
-        return isset($server['QUERY_STRING']) ? $server['QUERY_STRING'] : '';
+        //todo rewrite r
+        return isset($server['query_string']) ? $server['query_string'] : '';
     }
 
     /**
@@ -259,7 +260,7 @@ class Yii2Request extends \yii\web\Request
     {
         $tarsRequest = $this->getTarsRequest();
         $server = isset($tarsRequest->data['server']) ? $tarsRequest->data['server'] : [];
-        if (isset($server['HTTPS']) && (strcasecmp($server['HTTPS'], 'on') === 0 || $server['HTTPS'] == 1)) {
+        if (isset($server['https']) && (strcasecmp($server['https'], 'on') === 0 || $server['https'] == 1)) {
             return true;
         }
         foreach ($this->secureProtocolHeaders as $header => $values) {
@@ -289,7 +290,7 @@ class Yii2Request extends \yii\web\Request
     {
         $tarsRequest = $this->getTarsRequest();
         $server = isset($tarsRequest->data['server']) ? $tarsRequest->data['server'] : [];
-        return isset($server['SERVER_PORT']) ? (int)$server['SERVER_PORT'] : null;
+        return isset($server['server_port']) ? (int)$server['server_port'] : null;
     }
 
     /**
@@ -299,7 +300,7 @@ class Yii2Request extends \yii\web\Request
     {
         $tarsRequest = $this->getTarsRequest();
         $server = isset($tarsRequest->data['server']) ? $tarsRequest->data['server'] : [];
-        return isset($server['REMOTE_ADDR']) ? $server['REMOTE_ADDR'] : null;
+        return isset($server['remote_addr']) ? $server['remote_addr'] : null;
     }
 
     /**
@@ -309,7 +310,7 @@ class Yii2Request extends \yii\web\Request
     {
         $tarsRequest = $this->getTarsRequest();
         $server = isset($tarsRequest->data['server']) ? $tarsRequest->data['server'] : [];
-        return isset($server['REMOTE_HOST']) ? $server['REMOTE_HOST'] : null;
+        return isset($server['remote_host']) ? $server['remote_host'] : null;
     }
 
     /**
@@ -344,5 +345,23 @@ class Yii2Request extends \yii\web\Request
         $this->setUrl(null);
         $this->setAcceptableContentTypes(null);
         $this->setAcceptableLanguages(null);
+        $tarsRequest = $this->getTarsRequest();
+        $_SERVER = [
+            'SCRIPT_FILENAME' => '/index.php',
+            'SCRIPT_NAME' => '/index.php',
+            'PHP_SELF' => '',
+            'ORIG_SCRIPT_NAME' => '',
+            'DOCUMENT_ROOT' => '',
+        ];
+        $server = isset($tarsRequest->data['server']) ? $tarsRequest->data['server'] : [];
+        foreach ($server as $key => $value) {
+            $_SERVER[strtoupper($key)] = $value;
+        }
+        if (isset($_SERVER['argv'])) {
+            unset($_SERVER['argv']);
+        }
+        if (isset($_SERVER['argc'])) {
+            unset($_SERVER['argc']);
+        }
     }
 }

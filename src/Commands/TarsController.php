@@ -42,7 +42,7 @@ class TarsController extends Controller
             __DIR__ . '/../Tars/cservant/.gitkeep' => $tarsCservantDir . '/.gitkeep',
             __DIR__ . '/../services.php' => $basePath . '/services.php',
             __DIR__ . '/../../tars/tars.proto.php' => $basePath . '/../tars/tars.proto.php',
-            __DIR__ . '/../scripts/tars2php.sh' => $basePath . '/../scripts/tars2php.sh',
+            __DIR__ . '/../../scripts/tars2php.sh' => $basePath . '/../scripts/tars2php.sh',
             __DIR__ . '/../Tars/servant/.gitkeep' => $tarsServantDir . '/.gitkeep',
             __DIR__ . '/../Tars/impl/.gitkeep' => $tarsServantImplDir . '/.gitkeep',
         ]);
