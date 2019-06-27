@@ -175,7 +175,7 @@ class Yii2Request extends \yii\web\Request
     {
         if ($this->_queryParams === null) {
             $tarsRequest = $this->getTarsRequest();
-            $this->_queryParams = isset($request->data['get']) ? $tarsRequest->data['get'] : [];
+            $this->_queryParams = isset($tarsRequest->data['get']) ? $tarsRequest->data['get'] : [];
         }
         return $this->_queryParams;
     }
