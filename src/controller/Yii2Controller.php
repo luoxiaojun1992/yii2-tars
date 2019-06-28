@@ -60,6 +60,7 @@ class Yii2Controller extends Controller
         $application->trigger(Yii2App::EVENT_BEFORE_REQUEST);
         $application->state = Yii2App::STATE_HANDLING_REQUEST;
 
+        $application->set('request', $yii2Request);
         $yii2Response = $application->handleRequest($yii2Request);
 
         $application->state = Yii2App::STATE_AFTER_REQUEST;
