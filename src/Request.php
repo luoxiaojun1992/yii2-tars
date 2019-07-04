@@ -12,9 +12,12 @@
 namespace Lxj\Yii2\Tars;
 
 use Tars\core\Request as TarsRequest;
+use yii\base\InvalidConfigException;
 
 class Request
 {
+    protected static $config;
+
     /**
      * @var \yii\web\Request
      */
@@ -25,6 +28,7 @@ class Request
      *
      * @param TarsRequest $tarsRequest
      * @return Request
+     * @throws \yii\base\InvalidConfigException
      */
     public static function make(TarsRequest $tarsRequest)
     {
@@ -33,7 +37,8 @@ class Request
 
     /**
      * Request constructor.
-     * @param $tarsRequest
+     * @param TarsRequest $tarsRequest
+     * @throws \yii\base\InvalidConfigException
      */
     public function __construct(TarsRequest $tarsRequest)
     {
@@ -41,13 +46,30 @@ class Request
     }
 
     /**
-     * Create Yii2 Request.
-     *
      * @param $tarsRequest
+     * @throws \yii\base\InvalidConfigException
      */
     protected function createYii2Request($tarsRequest)
     {
-        $this->yii2Request = (new Yii2Request())->setTarsRequest($tarsRequest);
+        $app = Util::app();
+
+        if (self::$config) {
+            $requestConfig = self::$config;
+        } elseif (isset($app->components['request'])) {
+            $requestConfig = $app->components['request'];
+            if (!is_array($requestConfig)) {
+                throw new InvalidConfigException('Invalid request config:' . gettype($requestConfig));
+            }
+            self::$config = $requestConfig;
+        } else {
+            $requestConfig = [];
+        }
+
+        $requestConfig['class'] = Yii2Request::class;
+
+        $this->yii2Request = \Yii::createObject($requestConfig);
+
+        $this->yii2Request->setTarsRequest($tarsRequest);
     }
 
     /**
