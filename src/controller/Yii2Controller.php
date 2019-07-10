@@ -44,7 +44,7 @@ class Yii2Controller extends Controller
      * @throws \yii\base\InvalidConfigException
      * @throws \yii\web\NotFoundHttpException
      */
-    private function handle()
+    protected function handle()
     {
         ob_start();
         $isObEnd = false;
@@ -90,7 +90,7 @@ class Yii2Controller extends Controller
         return [$yii2Request, $yii2Response];
     }
 
-    private function prepareResponse(\yii\web\Response $response)
+    protected function prepareResponse(\yii\web\Response $response)
     {
         if ($response->statusCode === 204) {
             $response->content = '';
@@ -131,7 +131,7 @@ class Yii2Controller extends Controller
         }
     }
 
-    private function getResponseContent(\yii\web\Response $response)
+    protected function getResponseContent(\yii\web\Response $response)
     {
         if ($response->stream === null) {
             echo $response->content;
@@ -162,14 +162,14 @@ class Yii2Controller extends Controller
         }
     }
 
-    private function terminate($yii2Request, $yii2Response)
+    protected function terminate($yii2Request, $yii2Response)
     {
         $tarsRequestedEvent = new Event();
         $tarsRequestedEvent->data = [$yii2Request, $yii2Response];
         Util::app()->trigger('tarsRequested', $tarsRequestedEvent);
     }
 
-    private function clean($yii2Request)
+    protected function clean($yii2Request)
     {
         $app = Util::app();
 
@@ -181,7 +181,7 @@ class Yii2Controller extends Controller
         }
     }
 
-    private function response($yii2Response)
+    protected function response($yii2Response)
     {
         $application = Util::app();
 
