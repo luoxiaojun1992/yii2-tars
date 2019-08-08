@@ -126,7 +126,7 @@ pipeline {
         def JENKINS_HOME = "/root/jenkins"
         def PROJECT_ROOT = "$JENKINS_HOME/workspace/yii2-tars-demo"
         def APP_NAME = "PHPTest"
-        def SERVER_NAME = "PHPHTTPServer"
+        def SERVER_NAME = "Yii2Tars"
     }
     stages {
         stage('代码拉取与编译'){
@@ -136,6 +136,7 @@ pipeline {
                 script {
                     dir("$PROJECT_ROOT/src") {
                         echo "Composer Install"
+                        sh "composer clearcache"
                         sh "composer install -vvv"
                     }
                 }
@@ -146,7 +147,7 @@ pipeline {
                 script {
                     dir("$PROJECT_ROOT/src") {
                         echo "phpunit 测试"
-                        sh "vendor/bin/phpunit tests/"
+                        //sh "vendor/bin/phpunit tests/"
                         echo "valgrind 测试"
                     }
                 }
@@ -167,12 +168,12 @@ pipeline {
                         sh "ls *.tar.gz > tmp.log"
                         echo "上传build包"
                         def packageDeploy = sh(script: "head -n 1 tmp.log", returnStdout: true).trim()
-                        sh "curl -H 'Host:172.18.0.6:3000' -F 'suse=@./${packageDeploy}' -F 'application=${APP_NAME}' -F 'module_name=${SERVER_NAME}' -F 'comment=${env.TAG_DESC}' http://172.18.0.6:3000/pages/server/api/upload_patch_package > curl.log"
+                        sh "curl -H 'Host:172.18.0.3:3000' -F 'suse=@./${packageDeploy}' -F 'application=${APP_NAME}' -F 'module_name=${SERVER_NAME}' -F 'comment=${env.TAG_DESC}' http://172.18.0.3:3000/pages/server/api/upload_patch_package > curl.log"
                         echo "发布build包"
                         def packageVer = sh(script: "jq '.data.id' curl.log", returnStdout: true).trim()
-                        def postJson = '{"serial":true,"items":[{"server_id":30,"command":"patch_tars","parameters":{"patch_id":' + packageVer + ',"bak_flag":false,"update_text":"${env.TAG_DESC}"}}]}'
+                        def postJson = '{"serial":true,"items":[{"server_id":"35","command":"patch_tars","parameters":{"patch_id":' + packageVer + ',"bak_flag":false,"update_text":"${env.TAG_DESC}"}}]}'
                         echo postJson
-                        sh "curl -H 'Host:172.18.0.6:3000' -H 'Content-Type:application/json' -X POST --data '${postJson}' http://172.18.0.6:3000/pages/server/api/add_task"
+                        sh "curl -H 'Host:172.18.0.3:3000' -H 'Content-Type:application/json' -X POST --data '${postJson}' http://172.18.0.3:3000/pages/server/api/add_task"
                     }
                 }
             }
@@ -200,3 +201,9 @@ pipeline {
     }
 }
 ```
+
+Jenkins部署过程
+![Jenkins Pipeline](./docs/jenkins-pipeline.png)
+
+### PHP框架集成Tars
+[TARS如何集成到PHP框架](./docs/integration.md)
