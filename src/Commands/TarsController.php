@@ -3,8 +3,10 @@
 namespace Lxj\Yii2\Tars\Commands;
 
 use Lxj\Yii2\Tars\Registries\Registry;
+use Lxj\Yii2\Tars\Route\TarsRouteFactory;
 use Lxj\Yii2\Tars\Util;
 use Tars\cmd\Command as TarsCommand;
+use Tars\route\RouteFactory;
 use \yii\console\Controller;
 
 class TarsController extends Controller
@@ -16,6 +18,8 @@ class TarsController extends Controller
 
     public function actionEntry($cmd, $cfg)
     {
+        class_alias(TarsRouteFactory::class, RouteFactory::class);
+
         list($hostname, $port, $appName, $serverName) = Util::parseTarsConfig($cfg);
 
         Util::app()->params['tars']['deploy_cfg'] = $cfg;
