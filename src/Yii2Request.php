@@ -356,11 +356,11 @@ class Yii2Request extends \yii\web\Request
             $_SERVER[$key] = $value;
         }
         if ('cli-server' === PHP_SAPI) {
-            if (array_key_exists('HTTP_CONTENT_LENGTH', $server)) {
-                $server['CONTENT_LENGTH'] = $server['HTTP_CONTENT_LENGTH'];
+            if (array_key_exists('HTTP_CONTENT_LENGTH', $_SERVER)) {
+                $_SERVER['CONTENT_LENGTH'] = $_SERVER['HTTP_CONTENT_LENGTH'];
             }
-            if (array_key_exists('HTTP_CONTENT_TYPE', $server)) {
-                $server['CONTENT_TYPE'] = $server['HTTP_CONTENT_TYPE'];
+            if (array_key_exists('HTTP_CONTENT_TYPE', $_SERVER)) {
+                $_SERVER['CONTENT_TYPE'] = $_SERVER['HTTP_CONTENT_TYPE'];
             }
         }
         if (isset($_SERVER['argv'])) {
