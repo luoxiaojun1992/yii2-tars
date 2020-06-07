@@ -114,7 +114,7 @@ class Yii2Request extends \yii\web\Request
     {
         if ($this->_rawBody === null) {
             $tarsRequest = $this->getTarsRequest();
-            $this->_rawBody = $tarsRequest->data['post'] ?
+            $this->_rawBody = isset($tarsRequest->data['post']) ?
                 (is_array($tarsRequest->data['post']) ? http_build_query($tarsRequest->data['post']) : $tarsRequest->data['post']) :
                 null;
         }
