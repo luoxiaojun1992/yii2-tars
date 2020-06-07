@@ -357,6 +357,25 @@ class Yii2Request extends \yii\web\Request
         foreach ($server as $key => $value) {
             $_SERVER[strtoupper($key)] = $value;
         }
+        $headers = isset($tarsRequest->data['header']) ? $tarsRequest->data['header'] : [];
+        foreach ($headers as $key => $value) {
+            $key = str_replace('-', '_', $key);
+            $key = strtoupper($key);
+
+            if (! in_array($key, ['CONTENT_LENGTH', 'CONTENT_MD5', 'CONTENT_TYPE', 'REMOTE_ADDR', 'SERVER_PORT', 'HTTPS'])) {
+                $key = 'HTTP_' . $key;
+            }
+
+            $_SERVER[$key] = $value;
+        }
+        if ('cli-server' === PHP_SAPI) {
+            if (array_key_exists('HTTP_CONTENT_LENGTH', $server)) {
+                $server['CONTENT_LENGTH'] = $server['HTTP_CONTENT_LENGTH'];
+            }
+            if (array_key_exists('HTTP_CONTENT_TYPE', $server)) {
+                $server['CONTENT_TYPE'] = $server['HTTP_CONTENT_TYPE'];
+            }
+        }
         if (isset($_SERVER['argv'])) {
             unset($_SERVER['argv']);
         }
