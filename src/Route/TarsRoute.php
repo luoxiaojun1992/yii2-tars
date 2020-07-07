@@ -172,8 +172,6 @@ class TarsRoute implements Route
     {
         clearstatcache();
 
-        Event::offAll();
-
         $app = Util::app();
 
         if ($app->has('session', true)) {
