@@ -21,18 +21,18 @@ class TarsRoute implements Route
         Boot::handle();
 
         try {
-            clearstatcache();
+            $this->clean();
 
             list($yii2Request, $yii2Response) = $this->handle($request);
 
             $this->terminate($yii2Request, $yii2Response);
 
-            $this->clean($yii2Request);
-
             //send response event
             $this->response($response, $yii2Response);
 
             Util::app()->state = Yii2App::STATE_END;
+
+            $this->clean($yii2Request);
         } catch (\Exception $e) {
             $response->status(500);
             $response->send($e->getMessage() . '|' . $e->getTraceAsString());
@@ -168,15 +168,22 @@ class TarsRoute implements Route
         Util::app()->trigger('tarsRequested', $tarsRequestedEvent);
     }
 
-    protected function clean($yii2Request)
+    protected function clean($yii2Request = null)
     {
+        clearstatcache();
+
+        Event::offAll();
+
         $app = Util::app();
 
         if ($app->has('session', true)) {
             $app->getSession()->close();
         }
-        if($app->state == -1){
+        if ($app->state == -1) {
             $app->getLog()->logger->flush(true);
+        }
+        if ($app->has('response')) {
+            $app->getResponse()->clear();
         }
     }
 
