@@ -45,6 +45,10 @@ class TarsRoute implements Route
      */
     protected function handle(Request $tarsRequest)
     {
+        if (ob_get_level() > 0) {
+            ob_end_clean();
+        }
+
         ob_start();
         $isObEnd = false;
 
