@@ -66,7 +66,6 @@ class TarsRoute implements Route
         $application->trigger(Yii2App::EVENT_AFTER_REQUEST);
         $application->state = Yii2App::STATE_SENDING_RESPONSE;
 
-        ob_start();
         $yii2Response->trigger(\yii\web\Response::EVENT_BEFORE_SEND);
         $this->prepareResponse($yii2Response);
         $yii2Response->trigger(\yii\web\Response::EVENT_AFTER_PREPARE);
