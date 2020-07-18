@@ -82,7 +82,32 @@ class Response
     {
         $yii2Response = $this->getYii2Response();
 
-        $this->tarsResponse->resource->end($yii2Response->content);
+        if ($yii2Response->stream === null) {
+            $this->tarsResponse->resource->end($yii2Response->content);
+            return;
+        }
+        
+        set_time_limit(0); // Reset time limit for big files
+        $chunkSize = 8 * 1024 * 1024; // 8MB per chunk
+
+        if (is_array($yii2Response->stream)) {
+            list($handle, $begin, $end) = $yii2Response->stream;
+            fseek($handle, $begin);
+            while (!feof($handle) && ($pos = ftell($handle)) <= $end) {
+                if ($pos + $chunkSize > $end) {
+                    $chunkSize = $end - $pos + 1;
+                }
+                $this->tarsResponse->resource->write(fread($handle, $chunkSize));
+            }
+            $this->tarsResponse->resource->end();
+            fclose($handle);
+        } else {
+            while (!feof($yii2Response->stream)) {
+                $this->tarsResponse->resource->write(fread($yii2Response->stream, $chunkSize));
+            }
+            $this->tarsResponse->resource->end();
+            fclose($yii2Response->stream);
+        }
     }
 
     /**
