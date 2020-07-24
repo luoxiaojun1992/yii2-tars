@@ -134,8 +134,6 @@ class TarsRoute implements Route
     protected function getResponseContent(\yii\web\Response $response)
     {
         if ($response->stream === null) {
-            echo $response->content;
-
             return;
         }
 
