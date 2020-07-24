@@ -84,29 +84,35 @@ class Response
 
         if ($yii2Response->stream === null) {
             $this->tarsResponse->resource->end($yii2Response->content);
-            return;
         }
-        
-        set_time_limit(0); // Reset time limit for big files
-        $chunkSize = 8 * 1024 * 1024; // 8MB per chunk
+        else {
+            set_time_limit(0); // Reset time limit for big files
 
-        if (is_array($yii2Response->stream)) {
-            list($handle, $begin, $end) = $yii2Response->stream;
-            fseek($handle, $begin);
-            while (!feof($handle) && ($pos = ftell($handle)) <= $end) {
-                if ($pos + $chunkSize > $end) {
-                    $chunkSize = $end - $pos + 1;
+            $chunkSize = 2 * 1024 * 1024; // The default chunk of 2M is required by Swoole\Http\Response->write
+            $tarsConfig = \Tars\App::getTarsConfig();
+            if (isset($tarsConfig['tars']['application']['server']['setting']['buffer_output_size']))
+                $chunkSize = $tarsConfig['tars']['application']['server']['setting']['buffer_output_size'];
+            $chunkSize -= 1024; // If chunkSize equals buffer_output_size then Swoole\Http\Response->write will return false, Reduce chunkSize by 1024 bytes
+            if ($chunkSize <= 0)
+                throw new \yii\base\InvalidConfigException("buffer_output_size must be configured to be greater than 1024 bytes");
+
+            if (is_array($yii2Response->stream)) {
+                list($handle, $begin, $end) = $yii2Response->stream;
+                fseek($handle, $begin);
+                while (!feof($handle) && ($pos = ftell($handle)) <= $end) {
+                    if ($pos + $chunkSize > $end) {
+                        $chunkSize = $end - $pos + 1;
+                    }
+                    $this->tarsResponse->resource->write(fread($handle, $chunkSize));
                 }
-                $this->tarsResponse->resource->write(fread($handle, $chunkSize));
+                fclose($handle);
+            } else {
+                while (!feof($yii2Response->stream)) {
+                    $this->tarsResponse->resource->write(fread($yii2Response->stream, $chunkSize));
+                }
+                fclose($yii2Response->stream);
             }
             $this->tarsResponse->resource->end();
-            fclose($handle);
-        } else {
-            while (!feof($yii2Response->stream)) {
-                $this->tarsResponse->resource->write(fread($yii2Response->stream, $chunkSize));
-            }
-            $this->tarsResponse->resource->end();
-            fclose($yii2Response->stream);
         }
     }
 

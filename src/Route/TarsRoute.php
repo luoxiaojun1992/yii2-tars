@@ -50,6 +50,7 @@ class TarsRoute implements Route
         }
 
         ob_start();
+        $isObEnd = false;
 
         $yii2Request = \Lxj\Yii2\Tars\Request::make($tarsRequest)->toYii2();
 
@@ -78,10 +79,14 @@ class TarsRoute implements Route
         if (!$yii2Response->stream) {
             if (strlen($yii2Response->content) === 0 && ob_get_length() > 0) {
                 $yii2Response->content = ob_get_contents();
+                ob_end_clean();
+                $isObEnd = true;
             }
         }
 
-        ob_end_clean();
+        if (!$isObEnd) {
+            ob_end_flush();
+        }
 
         return [$yii2Request, $yii2Response];
     }
