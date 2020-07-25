@@ -73,7 +73,6 @@ class TarsRoute implements Route
         $yii2Response->trigger(\yii\web\Response::EVENT_BEFORE_SEND);
         $this->prepareResponse($yii2Response);
         $yii2Response->trigger(\yii\web\Response::EVENT_AFTER_PREPARE);
-        $this->getResponseContent($yii2Response);
         $yii2Response->trigger(\yii\web\Response::EVENT_AFTER_SEND);
         $yii2Response->isSent = true;
 
@@ -128,35 +127,6 @@ class TarsRoute implements Route
             } else {
                 throw new InvalidArgumentException('Response content must be a string or an object implementing __toString().');
             }
-        }
-    }
-
-    protected function getResponseContent(\yii\web\Response $response)
-    {
-        if ($response->stream === null) {
-            return;
-        }
-
-        set_time_limit(0); // Reset time limit for big files
-        $chunkSize = 8 * 1024 * 1024; // 8MB per chunk
-
-        if (is_array($response->stream)) {
-            list($handle, $begin, $end) = $response->stream;
-            fseek($handle, $begin);
-            while (!feof($handle) && ($pos = ftell($handle)) <= $end) {
-                if ($pos + $chunkSize > $end) {
-                    $chunkSize = $end - $pos + 1;
-                }
-                echo fread($handle, $chunkSize);
-                flush(); // Free up memory. Otherwise large files will trigger PHP's memory limit.
-            }
-            fclose($handle);
-        } else {
-            while (!feof($response->stream)) {
-                echo fread($response->stream, $chunkSize);
-                flush();
-            }
-            fclose($response->stream);
         }
     }
 
