@@ -76,7 +76,7 @@ class TarsRoute implements Route
         $yii2Response->trigger(\yii\web\Response::EVENT_AFTER_SEND);
         $yii2Response->isSent = true;
 
-        if (strlen($yii2Response->content) === 0 && ob_get_length() > 0) {
+        if ((!$yii2Response->stream) && is_null($yii2Response->content) && ob_get_length() > 0) {
             $yii2Response->content = ob_get_contents();
             ob_end_clean();
             $isObEnd = true;

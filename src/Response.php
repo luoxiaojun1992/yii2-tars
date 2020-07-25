@@ -77,24 +77,27 @@ class Response
 
     /**
      * Sends HTTP content.
+     *
+     * @throws \Exception
      */
     protected function sendContent()
     {
         $yii2Response = $this->getYii2Response();
 
-        if ($yii2Response->stream === null) {
+        if (!is_null($yii2Response->content)) {
             $this->tarsResponse->resource->end($yii2Response->content);
-        }
-        else {
+        } elseif ($yii2Response->stream) {
             set_time_limit(0); // Reset time limit for big files
 
             $chunkSize = 2 * 1024 * 1024; // The default chunk of 2M is required by Swoole\Http\Response->write
             $tarsConfig = \Tars\App::getTarsConfig();
-            if (isset($tarsConfig['tars']['application']['server']['setting']['buffer_output_size']))
+            if (isset($tarsConfig['tars']['application']['server']['setting']['buffer_output_size'])) {
                 $chunkSize = $tarsConfig['tars']['application']['server']['setting']['buffer_output_size'];
-            $chunkSize -= 1024; // If chunkSize equals buffer_output_size then Swoole\Http\Response->write will return false, Reduce chunkSize by 1024 bytes
-            if ($chunkSize <= 0)
+            }
+            $chunkSize -= 1024; // (Maybe) If chunkSize equals buffer_output_size then Swoole\Http\Response->write will return false, Reduce chunkSize by 1024 bytes
+            if ($chunkSize <= 0) {
                 throw new \yii\base\InvalidConfigException("buffer_output_size must be configured to be greater than 1024 bytes");
+            }
 
             if (is_array($yii2Response->stream)) {
                 list($handle, $begin, $end) = $yii2Response->stream;
@@ -113,6 +116,8 @@ class Response
                 fclose($yii2Response->stream);
             }
             $this->tarsResponse->resource->end();
+        } else {
+            throw new \Exception("Invalid yii2 response object");
         }
     }
 
