@@ -10,9 +10,9 @@ class Boot
 {
     private static $booted = false;
 
-    public static function handle()
+    public static function handle($force = false)
     {
-        if (!self::$booted) {
+        if ((!self::$booted) || $force) {
             $localConfig = Util::app()->params['tars'];
 
             $logLevel = isset($localConfig['log_level']) ? $localConfig['log_level'] : ['info'];

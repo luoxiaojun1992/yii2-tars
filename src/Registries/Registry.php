@@ -8,7 +8,7 @@ class Registry
 {
     public static function register($hostname, $port)
     {
-        $tarsDriverConfig = Util::app()->params['tars'];
+        $tarsDriverConfig = \Yii::$app->params['tars'];
 
         foreach ($tarsDriverConfig['registries'] as $registry) {
             if ($registry['type'] === 'kong') {

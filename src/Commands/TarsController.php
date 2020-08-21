@@ -22,7 +22,7 @@ class TarsController extends Controller
 
         list($hostname, $port, $appName, $serverName) = Util::parseTarsConfig($cfg);
 
-        Util::app()->params['tars']['deploy_cfg'] = $cfg;
+        \Yii::$app->params['tars']['deploy_cfg'] = $cfg;
 
         Registry::register($hostname, $port);
 
@@ -32,7 +32,7 @@ class TarsController extends Controller
 
     public function actionPublish()
     {
-        $basePath = Util::app()->getBasePath();
+        $basePath = \Yii::$app->getBasePath();
         $tarsServantDir = $basePath . '/tars/servant';
         $tarsServantImplDir = $basePath . '/tars/impl';
         $tarsCservantDir = $basePath . '/tars/cservant';

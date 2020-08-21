@@ -7,8 +7,6 @@ use yii\web\Application;
 
 class Util
 {
-    protected static $app;
-
     public static function parseTarsConfig($cfg)
     {
         $hostname = gethostname();
@@ -26,10 +24,6 @@ class Util
      */
     public static function app()
     {
-        if (!is_null(self::$app)) {
-            return self::$app;
-        }
-
-        return self::$app = new Application(include \Yii::$app->getBasePath() . '/config/web.php');
+        return App::getApp();
     }
 }
