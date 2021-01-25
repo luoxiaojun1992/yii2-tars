@@ -32,7 +32,7 @@ class TarsRoute implements Route
 
             Util::app()->state = Yii2App::STATE_END;
 
-            $this->clean($yii2Request);
+            $this->clean();
         } catch (\Exception $e) {
             $response->status(500);
             $response->send($e->getMessage() . '|' . $e->getTraceAsString());
@@ -137,7 +137,7 @@ class TarsRoute implements Route
         Util::app()->trigger('tarsRequested', $tarsRequestedEvent);
     }
 
-    protected function clean($yii2Request = null)
+    protected function clean()
     {
         clearstatcache();
 
