@@ -323,6 +323,7 @@ class Yii2Request extends \yii\web\Request
      */
     public function clear()
     {
+        $_GET = $_POST = $_REQUEST = $_FILES = $_COOKIE = $_SESSION = [];
         $this->_headers = null;
         $this->_bodyParams = null;
         $this->_queryParams = null;
@@ -332,6 +333,9 @@ class Yii2Request extends \yii\web\Request
         $this->setUrl(null);
         $this->setAcceptableContentTypes(null);
         $this->setAcceptableLanguages(null);
+        $this->setQueryParams(null);
+        $this->setBodyParams(null);
+        $this->setRawBody(null);
         $tarsRequest = $this->getTarsRequest();
         $_SERVER = [
             'SCRIPT_FILENAME' => '/index.php',
